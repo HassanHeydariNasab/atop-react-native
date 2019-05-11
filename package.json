@@ -1,0 +1,51 @@
+{
+    "name": "atop",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node node_modules/react-native/local-cli/cli.js start",
+        "test": "jest"
+    },
+    "dependencies": {
+        "@react-native-community/async-storage": "^1.4.0",
+        "deep-eql": "^4.0.0",
+        "mobx": "^5.9.4",
+        "mobx-react": "^5.4.3",
+        "react": "16.8.3",
+        "react-native": "0.59.8",
+        "react-native-gesture-handler": "^1.2.1",
+        "react-native-paper": "^2.15.2",
+        "react-native-responsive-screen": "^1.2.2",
+        "react-native-restart": "^0.0.10",
+        "react-native-vector-icons": "^6.4.2",
+        "react-navigation": "^3.9.1",
+        "react-navigation-backhandler": "^1.3.1",
+        "timeago.js": "^4.0.0-beta.2"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.4.4",
+        "@babel/core": "^7.4.4",
+        "@babel/runtime": "^7.4.4",
+        "babel-eslint": "^10.0.1",
+        "babel-jest": "^24.8.0",
+        "eslint": "^5.16.0",
+        "eslint-config-airbnb": "^17.1.0",
+        "eslint-config-prettier": "^4.1.0",
+        "eslint-plugin-import": "^2.17.2",
+        "eslint-plugin-jsx-a11y": "^6.2.1",
+        "eslint-plugin-prettier": "^3.0.1",
+        "eslint-plugin-react": "^7.12.4",
+        "jest": "^24.8.0",
+        "metro-react-native-babel-preset": "^0.54.0",
+        "prettier": "^1.17.0",
+        "react-test-renderer": "16.8.3"
+    },
+    "rnpm": {
+        "assets": [
+            "./assets/fonts/"
+        ]
+    },
+    "jest": {
+        "preset": "react-native"
+    }
+}
