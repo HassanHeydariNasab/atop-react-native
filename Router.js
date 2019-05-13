@@ -5,30 +5,27 @@ import {
     createDrawerNavigator,
     createSwitchNavigator
 } from 'react-navigation'
+import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs'
 import Splash from './Screens/Splash'
 import Login from './Screens/Login'
 import Drawer from './Components/Drawer'
-import Top_ from './Screens/Top'
+import Top from './Screens/Top'
+import CreatePost from './Screens/CreatePost'
+import Posts from './Screens/Posts'
 
-const StackNavigator = createStackNavigator(
+const StackNavigator = createMaterialBottomTabNavigator(
     {
-        Top_: {
-            screen: Top_
+        Top: {
+            screen: Top
         },
-        // Posts: {
-        //     screen: Posts
-        // },
-        // Post: {
-        //     screen: Post
-        // },
-        // CreatePost: {
-        //     screen: CreatePost
-        // },
-        // Settings: {
-        //     screen: Settings
-        // }
+        Posts: {
+            screen: Posts
+        },
+        CreatePost: {
+            screen: CreatePost
+        }
     },
-    { initialRouteName: 'Top_', navigationOptions: {}, defaultNavigationOptions: {} }
+    { initialRouteName: 'Top', navigationOptions: {}, defaultNavigationOptions: {} }
 )
 
 const DrawerNavigator = createDrawerNavigator(

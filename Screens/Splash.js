@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { View, Image } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
+import { ActivityIndicator } from 'react-native-paper'
 import RNRestart from 'react-native-restart'
 import { states as user_state } from '../Stores/User'
 import { parseJSON, logout, on_connection_error } from '../utils'
@@ -11,7 +12,6 @@ export default class Drawer extends Component {
         super(props)
         AsyncStorage.getItem('token', (error, token) => {
             if (token) {
-                user_state.is_logged_in = true
                 user_state.token = token
                 this.fetch_me()
             } else {
@@ -35,7 +35,6 @@ export default class Drawer extends Component {
         })
             .then(parseJSON)
             .then(([status, j]) => {
-                console.warn(j)
                 if (status === 200) {
                     user_state.user = j.user
                     this.props.navigation.navigate('Main')
@@ -53,6 +52,10 @@ export default class Drawer extends Component {
     }
 
     render() {
-        return <View style={{ flex: 1, backgroundColor: '#ff0' }} />
+        return (
+            <View style={{ flex: 1, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center' }}>
+                <ActivityIndicator size='large' />
+            </View>
+        )
     }
 }

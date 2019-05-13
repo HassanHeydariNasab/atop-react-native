@@ -22,7 +22,8 @@ export const theme = {
         accent: '#6855F9',
         text: '#052C49',
         placeholder: '#607D8B',
-        divider: '#E3E8EB'
+        divider: '#E3E8EB',
+        background: '#f5f5f5'
     },
     fonts: {
         ...DefaultTheme.fonts,

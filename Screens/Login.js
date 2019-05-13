@@ -8,11 +8,13 @@ import {
     listenOrientationChange as loc,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen'
+import ErrorText from '../Components/ErrorText'
 import { observer } from 'mobx-react'
 import { states as user_state } from '../Stores/User'
 import { states as snackbar_state } from '../Stores/Snackbar'
 import { HOST } from '../config'
 import { parseJSON, normalized_mobile, on_connection_error, on_error } from '../utils'
+import { theme } from '../index'
 
 const vmin = percentage => {
     if (h('100%') > w('100%')) {
@@ -33,7 +35,10 @@ class Login extends Component {
         code: '',
         is_submitting: false,
         is_request_code_passed: false,
-        is_user_exists: false
+        is_user_exists: false,
+        errors_request_code: {},
+        errors_register: {},
+        errors_login: {}
     }
 
     componentWillMount() {
@@ -44,15 +49,6 @@ class Login extends Component {
 
     componentWillUnmount() {
         rol()
-    }
-
-    onChange_input = event => {
-        const { target } = event
-        const value = target.type === 'checkbox' ? target.checked : target.value
-        const { name } = target
-        this.setState({
-            [name]: value
-        })
     }
 
     code_field_focus = () => {
@@ -68,12 +64,13 @@ class Login extends Component {
     }
 
     submit_request_code = () => {
-        this.setState({ is_submitting: true })
+        const { country_code, mobile } = this.state
+        this.setState({ is_submitting: true, errors_request_code: {} })
         fetch(`${HOST}/v1/request_code`, {
             method: 'POST',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                mobile: this.state.country_code + normalized_mobile(this.state.mobile)
+                mobile: country_code + normalized_mobile(mobile)
             })
         })
             .then(parseJSON)
@@ -81,6 +78,8 @@ class Login extends Component {
                 this.setState({ is_submitting: false })
                 if (status === 201) {
                     this.setState({ is_request_code_passed: true, is_user_exists: j.is_user_exists })
+                } else if (status === 400) {
+                    this.setState({ errors_request_code: j.errors })
                 } else {
                     console.warn(status, j)
                     on_error(j)
@@ -94,13 +93,15 @@ class Login extends Component {
     }
 
     submit_register = () => {
+        const { country_code, mobile, code, name } = this.state
+        this.setState({ is_submitting: true, errors_register: {} })
         fetch(`${HOST}/v1/register`, {
             method: 'POST',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                mobile: this.state.country_code + normalized_mobile(this.state.mobile),
-                code: this.state.code,
-                name: this.state.name
+                mobile: country_code + normalized_mobile(mobile),
+                code,
+                name
             })
         })
             .then(parseJSON)
@@ -113,6 +114,8 @@ class Login extends Component {
                         snackbar_state.is_visible = true
                         this.props.navigation.navigate('Main')
                     })
+                } else if (status === 400) {
+                    this.setState({ errors_register: j.errors })
                 } else {
                     console.warn(status, j)
                     on_error(j)
@@ -126,12 +129,14 @@ class Login extends Component {
     }
 
     submit_login = () => {
+        const { country_code, mobile, code } = this.state
+        this.setState({ is_submitting: true, errors_login: {} })
         fetch(`${HOST}/v1/login`, {
             method: 'POST',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                mobile: this.state.country_code + normalized_mobile(this.state.mobile),
-                code: this.state.code
+                mobile: country_code + normalized_mobile(mobile),
+                code
             })
         })
             .then(parseJSON)
@@ -145,6 +150,8 @@ class Login extends Component {
                         snackbar_state.is_visible = true
                         this.props.navigation.navigate('Main')
                     })
+                } else if (status === 400) {
+                    this.setState({ errors_login: j.errors })
                 } else {
                     console.warn(status, j)
                     on_error(j)
@@ -191,6 +198,18 @@ class Login extends Component {
     code_field = null
 
     render() {
+        const {
+            mobile,
+            code,
+            name,
+            country_code,
+            is_request_code_passed,
+            is_submitting,
+            is_user_exists,
+            errors_request_code,
+            errors_register,
+            errors_login
+        } = this.state
         return (
             <ScrollView style={{ backgroundColor: '#fafafa' }}>
                 <View style={{ height: '100%', paddingHorizontal: w('10%'), paddingBottom: h('10%') }}>
@@ -211,13 +230,13 @@ class Login extends Component {
                         />
                         {/* <Title>اتاپ</Title> */}
                     </View>
-                    {!this.state.is_request_code_passed ? (
+                    {!is_request_code_passed ? (
                         <>
                             <View style={{ flexDirection: 'column' }}>
                                 <TextInput
                                     placeholder='country code'
                                     keyboardType='numeric'
-                                    value={this.state.country_code}
+                                    value={country_code}
                                     onChangeText={country_code => this.setState({ country_code })}
                                     returnKeyType='next'
                                     ref={ref => {
@@ -228,7 +247,7 @@ class Login extends Component {
                                 <TextInput
                                     placeholder='mobile'
                                     keyboardType='numeric'
-                                    value={this.state.mobile}
+                                    value={mobile}
                                     onChangeText={mobile => this.setState({ mobile })}
                                     returnKeyType='go'
                                     ref={ref => {
@@ -236,11 +255,13 @@ class Login extends Component {
                                     }}
                                     onSubmitEditing={this.submit_request_code}
                                     style={{ marginTop: 12 }}
+                                    error={errors_request_code.mobile}
                                 />
+                                <ErrorText errors={errors_request_code} keys='mobile' />
                             </View>
                             <Button
                                 onPress={this.submit_request_code}
-                                loading={this.state.is_submitting}
+                                loading={is_submitting}
                                 mode='contained'
                                 style={{ marginTop: 12 }}
                                 dark
@@ -251,14 +272,14 @@ class Login extends Component {
                     ) : (
                         <>
                             <Text style={{ marginBottom: 16 }}>
-                                {`The validation code was sent to ${normalized_mobile(this.state.mobile)}`}
+                                {`The validation code was sent to ${normalized_mobile(mobile)}`}
                             </Text>
-                            {!this.state.is_user_exists ? (
+                            {!is_user_exists ? (
                                 <>
                                     <TextInput
                                         placeholder='name'
                                         keyboardType='default'
-                                        value={this.state.name}
+                                        value={name}
                                         onChangeText={name => this.setState({ name })}
                                         returnKeyType='next'
                                         ref={ref => {
@@ -267,6 +288,7 @@ class Login extends Component {
                                         onSubmitEditing={this.code_field_focus}
                                         style={{ marginBottom: 12 }}
                                     />
+                                    <ErrorText errors={errors_register} keys='name' />
                                 </>
                             ) : null}
                             <TextInput
@@ -278,11 +300,13 @@ class Login extends Component {
                                 ref={ref => {
                                     this.code_field = ref
                                 }}
-                                onSubmitEditing={this.state.is_user_exists ? this.submit_login : this.submit_register}
+                                onSubmitEditing={is_user_exists ? this.submit_login : this.submit_register}
                             />
+                            <ErrorText errors={errors_register} keys='code' />
+                            <ErrorText errors={errors_login} keys='code' />
                             <Button
-                                onPress={this.state.is_user_exists ? this.submit_login : this.submit_register}
-                                loading={this.state.is_submitting}
+                                onPress={is_user_exists ? this.submit_login : this.submit_register}
+                                loading={is_submitting}
                                 mode='contained'
                                 style={{ marginTop: 12 }}
                                 dark

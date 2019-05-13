@@ -161,51 +161,17 @@ export function parsed_errors(keys, errors) {
         : null
 }
 
-// post.access_level
-const ALL_SUBSCRIBERS = 10
-const SELECTED_TIERS = 20
-
-export function cheapest_tier(post, tiers) {
-    // return the cheapest tier that is allowed to access to the post
-    if (post.access_level === SELECTED_TIERS) {
-        let allowed_tiers = tiers.filter(tier => {
-            if (post.tiers.indexOf(tier.id) !== -1) {
-                return true
-            } else {
-                return false
-            }
-        })
-        var cheapest_tier = allowed_tiers[0]
-        for (let tier_index in allowed_tiers) {
-            if (allowed_tiers[tier_index].amount < cheapest_tier.amount) {
-                cheapest_tier = allowed_tiers[tier_index]
-            }
-        }
-    } else if (post.access_level === ALL_SUBSCRIBERS) {
-        let allowed_tiers = tiers
-        // eslint-disable-next-line no-redeclare
-        var cheapest_tier = allowed_tiers[0]
-        for (let tier_index in allowed_tiers) {
-            if (allowed_tiers[tier_index].amount < cheapest_tier.amount) {
-                cheapest_tier = allowed_tiers[tier_index]
-            }
-        }
-    } else {
-        console.warn('it seems that post.has_access is true')
-    }
-    return cheapest_tier
-}
 
 export function on_connection_error() {
     Alert.alert(
-        'خطای اتصال',
-        `اتصال به سرور با خطا مواجه شد.\nاتصال اینترنت دستگاه خود را بررسی کنید.`,
+        'Connection Error',
+        `A server error occurred.`,
         [
             {
-                text: 'ادامه'
+                text: 'Ignore'
             },
             {
-                text: 'تلاش دوباره',
+                text: 'Restart App',
                 onPress: RNRestart.Restart
             }
         ],
@@ -215,11 +181,11 @@ export function on_connection_error() {
 
 export function on_error(error) {
     Alert.alert(
-        'خطا',
-        `${error}`,
+        'Error',
+        error.message || JSON.stringify(error),
         [
             {
-                text: 'باشه'
+                text: 'OK'
             },
         ],
         { cancelable: true }

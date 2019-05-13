@@ -20,6 +20,7 @@ import {
     listenOrientationChange as loc,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen'
+import { NavigationAction } from 'react-navigation'
 import { observer } from 'mobx-react'
 import { states as user_state } from '../Stores/User'
 import { logout } from '../utils'
@@ -41,12 +42,11 @@ const Item = ({ title, onPress, icon }) => (
             width: '100%',
             flexDirection: 'row',
             alignItems: 'center',
-            borderBottomWidth: 0.7,
-            borderBottomColor: '#e0e0e0'
+            paddingVertical: 10
         }}
     >
-        <Icon name={icon} size={32} color='#B0BEC5' style={{ paddingLeft: 12 }} />
-        <Title style={{ padding: 12, fontSize: 14 }}>{title}</Title>
+        <Icon name={icon} size={32} color='#fff' style={{ paddingLeft: 20 }} />
+        <Title style={{ padding: 12, fontSize: 14, color: '#fff' }}>{title}</Title>
     </TouchableOpacity>
 )
 
@@ -66,17 +66,22 @@ class Drawer extends Component {
     }
 
     goto_Top = () => {
-        this.props.navigation.navigate('Businesses')
+        this.props.navigation.navigate('Top')
     }
 
     goto_Posts = () => {
         this.props.navigation.navigate('Posts')
     }
 
+    goto_CreatePost = () => {
+        this.props.navigation.navigate('CreatePost')
+    }
+
     // eslint-disable-next-line react/sort-comp
     items = [
-        { title: 'Top', icon: 'home', onPress: this.goto_Businesses },
+        { title: 'Top', icon: 'home', onPress: this.goto_Top },
         { title: 'Posts', icon: 'card-text-outline', onPress: this.goto_Posts },
+        { title: 'Write a Post', icon: 'pencil-outline', onPress: this.goto_CreatePost },
         { title: 'Logout', icon: 'logout-variant', onPress: logout }
     ]
 
@@ -85,7 +90,7 @@ class Drawer extends Component {
             <ScrollView
                 style={{
                     display: 'flex',
-                    backgroundColor: '#fafafa',
+                    backgroundColor: theme.colors.primary,
                     paddingBottom: 12,
                     elevation: 3
                 }}
@@ -94,46 +99,11 @@ class Drawer extends Component {
                 <View
                     style={{
                         width: '100%',
-                        borderBottomWidth: 0.7,
-                        borderBottomColor: '#e0e0e0',
                         paddingVertical: h('5%'),
                         alignItems: 'center'
                     }}
                 >
-                    {user_state.user.avatar ? (
-                        <Image
-                            style={{
-                                width: vmin(20),
-                                height: vmin(20),
-                                borderRadius: w('100%'),
-                                borderWidth: 1.6,
-                                borderColor: theme.colors.text
-                            }}
-                            source={{
-                                uri: user_state.user.avatar
-                            }}
-                            height={vmin(20)}
-                            width={vmin(20)}
-                            defaultSource={default_avatar}
-                            resizeMode='cover'
-                        />
-                    ) : (
-                        <Image
-                            style={{
-                                width: vmin(20),
-                                height: vmin(20),
-                                borderRadius: w('100%'),
-                                borderWidth: 1.6,
-                                borderColor: theme.colors.text
-                            }}
-                            source={default_avatar}
-                            height={vmin(20)}
-                            width={vmin(20)}
-                            defaultSource={default_avatar}
-                            resizeMode='cover'
-                        />
-                    )}
-                    <Text style={{ textAlign: 'center', marginTop: '5%' }}>{user_state.user.name}</Text>
+                    <Text style={{ textAlign: 'center', marginTop: '5%', color: '#fff' }}>{user_state.user.name}</Text>
                 </View>
                 {this.items.map((item, index) => (
                     <Item title={item.title} icon={item.icon} onPress={item.onPress} key={item.title} />
