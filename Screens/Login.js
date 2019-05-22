@@ -239,7 +239,7 @@ class Login extends Component {
                                     placeholder='country code'
                                     keyboardType='numeric'
                                     value={country_code}
-                                    onChangeText={country_code => this.setState({ country_code })}
+                                    onChangeText={_country_code => this.setState({ country_code: _country_code })}
                                     returnKeyType='next'
                                     ref={ref => {
                                         this.country_code_field = ref
@@ -250,7 +250,7 @@ class Login extends Component {
                                     placeholder='mobile'
                                     keyboardType='numeric'
                                     value={mobile}
-                                    onChangeText={mobile => this.setState({ mobile })}
+                                    onChangeText={_mobile => this.setState({ mobile: _mobile })}
                                     returnKeyType='go'
                                     ref={ref => {
                                         this.mobile_field = ref
@@ -296,8 +296,8 @@ class Login extends Component {
                             <TextInput
                                 placeholder='code'
                                 keyboardType='numeric'
-                                value={this.state.code}
-                                onChangeText={code => this.setState({ code })}
+                                value={code}
+                                onChangeText={_code => this.setState({ code: _code })}
                                 returnKeyType='go'
                                 ref={ref => {
                                     this.code_field = ref
