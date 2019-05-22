@@ -76,7 +76,7 @@ class CreatePost extends Component {
             .then(([status, j]) => {
                 this.setState({ is_submitting: false })
                 if (status === 201) {
-                    snackbar_state.message = 'Your post was sent to the reviewers.'
+                    snackbar_state.message = 'Your post was sent.'
                     snackbar_state.is_visible = true
                     this.setState({ text: '' })
                 } else if (status === 400) {

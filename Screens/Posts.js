@@ -24,7 +24,7 @@ const vmin = percentage => {
     return h(`${percentage}%`)
 }
 
-const LIMIT = 3
+const LIMIT = 12
 
 const PostCard = ({ post, onPress_like, is_sending_like }) => (
     <Surface
@@ -36,7 +36,9 @@ const PostCard = ({ post, onPress_like, is_sending_like }) => (
             backgroundColor: '#fff'
         }}
     >
-        <Text style={{ fontFamily: theme.fonts.medium, textAlign: 'auto', margin: 12 }}>{post.user.name}</Text>
+        <Text style={{ fontFamily: theme.fonts.medium, textAlign: 'auto', margin: 12, textAlign: 'center' }}>
+            {post.user.name}
+        </Text>
         <Text style={{ fontFamily: theme.fonts.regular, textAlign: 'auto', margin: 12 }}>{post.text}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {is_sending_like ? (
@@ -101,7 +103,7 @@ class Posts extends Component {
             .then(([status, j]) => {
                 this.setState({ is_fetching_posts: false, is_refreshing_posts: false })
                 if (status === 200) {
-                    const has_next = (Array.isArray(j.posts) && j.posts.length > 0)
+                    const has_next = Array.isArray(j.posts) && j.posts.length > 0
                     if (Array.isArray(posts)) {
                         this.setState({ posts: [...posts, ...j.posts], offset: offset + LIMIT, has_next })
                     } else {
@@ -142,6 +144,7 @@ class Posts extends Component {
                             break
                         }
                     }
+                    user_state.user.remaining_likes -= 1
                 } else {
                     console.warn(status, j)
                     on_error(j)

@@ -8,8 +8,8 @@ import {
     listenOrientationChange as loc,
     removeOrientationListener as rol
 } from 'react-native-responsive-screen'
-import ErrorText from '../Components/ErrorText'
 import { observer } from 'mobx-react'
+import ErrorText from '../Components/ErrorText'
 import { states as user_state } from '../Stores/User'
 import { states as snackbar_state } from '../Stores/Snackbar'
 import { HOST } from '../config'
@@ -109,6 +109,7 @@ class Login extends Component {
                 this.setState({ is_submitting: false })
                 if (status === 201) {
                     user_state.token = j.token
+                    this.fetch_me()
                     AsyncStorage.setItem('token', j.token, () => {
                         snackbar_state.message = 'You have been registered and logged in.'
                         snackbar_state.is_visible = true
@@ -145,6 +146,7 @@ class Login extends Component {
                 this.setState({ is_submitting: false })
                 if (status === 200) {
                     user_state.token = j.token
+                    this.fetch_me()
                     AsyncStorage.setItem('token', j.token, () => {
                         snackbar_state.message = 'You are logged in.'
                         snackbar_state.is_visible = true
@@ -272,7 +274,7 @@ class Login extends Component {
                     ) : (
                         <>
                             <Text style={{ marginBottom: 16 }}>
-                                {`The validation code was sent to ${normalized_mobile(mobile)}`}
+                                {`The validation code was sent to ${country_code + normalized_mobile(mobile)}`}
                             </Text>
                             {!is_user_exists ? (
                                 <>

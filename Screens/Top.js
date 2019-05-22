@@ -34,16 +34,23 @@ class Top extends Component {
 
     state = { post: {} }
 
+    onDidFocus = null
+
     componentWillMount() {
         loc(this)
     }
 
     componentDidMount() {
+        const { navigation } = this.props
         this.fetch_top_post()
+        this.onDidFocus = navigation.addListener('didFocus', payload => {
+            this.fetch_top_post()
+        })
     }
 
     componentWillUnmount() {
         rol()
+        this.onDidFocus.remove()
     }
 
     fetch_top_post = () => {
@@ -82,14 +89,13 @@ class Top extends Component {
                     width: '100%',
                     paddingHorizontal: w('10%'),
                     paddingBottom: h('10%'),
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: '#fff',
                     justifyContent: 'center',
                     alignItems: 'center'
                 }}
             >
-                <Text style={{ fontFamily: theme.fonts.medium }}>{post?.user?.name}</Text>
-                <Text style={{ fontFamily: theme.fonts.regular }}>{post?.text}</Text>
-                <Text style={{ fontFamily: theme.fonts.medium, color: theme.colors.placeholder }}>{post?.liked}</Text>
+                <Text style={{ fontFamily: theme.fonts.medium, marginBottom: 20 }}>{post?.user?.name}</Text>
+                <Text style={{ fontFamily: theme.fonts.regular, margin: 18 }}>{post?.text}</Text>
             </View>
         )
     }

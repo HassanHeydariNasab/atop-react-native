@@ -11,7 +11,8 @@ import {
     Title,
     Subheading,
     Surface,
-    Avatar
+    Avatar,
+    ActivityIndicator
 } from 'react-native-paper'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import {
@@ -23,7 +24,9 @@ import {
 import { NavigationAction } from 'react-navigation'
 import { observer } from 'mobx-react'
 import { states as user_state } from '../Stores/User'
-import { logout } from '../utils'
+import ErrorText from './ErrorText'
+import { HOST } from '../config'
+import { parseJSON, normalized_phone_number, on_connection_error, on_error, logout } from '../utils'
 import { theme } from '../index'
 
 const default_avatar = require('../Images/profile_picture_placeholder.png')
@@ -55,6 +58,15 @@ class Drawer extends Component {
         return {}
     }
 
+    state = {
+        user_name: user_state.user.name,
+        is_editing__user_name: false,
+        is_sending__user_name: false,
+        errors__user_name: {}
+    }
+
+    items = [{ title: 'Logout', icon: 'logout-variant', onPress: logout }]
+
     componentWillMount() {
         loc(this)
     }
@@ -77,15 +89,50 @@ class Drawer extends Component {
         this.props.navigation.navigate('CreatePost')
     }
 
-    // eslint-disable-next-line react/sort-comp
-    items = [
-        { title: 'Top', icon: 'home', onPress: this.goto_Top },
-        { title: 'Posts', icon: 'card-text-outline', onPress: this.goto_Posts },
-        { title: 'Write a Post', icon: 'pencil-outline', onPress: this.goto_CreatePost },
-        { title: 'Logout', icon: 'logout-variant', onPress: logout }
-    ]
+    set_editing__user_name = () => {
+        this.setState({ is_editing__user_name: true })
+    }
+
+    onChangeText__user_name = user_name => {
+        this.setState({ user_name })
+    }
+
+    edit__user_name = () => {
+        const { user_name } = this.state
+        this.setState({ is_sending__user_name: true, errors__user_name: {} })
+        fetch(`${HOST}/v1/users/me`, {
+            method: 'PATCH',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: user_state.token
+            },
+            body: JSON.stringify({
+                name: user_name
+            })
+        })
+            .then(parseJSON)
+            .then(([status, j]) => {
+                this.setState({ is_sending__user_name: false })
+                if (status === 200) {
+                    user_state.user.name = j.user.name
+                    this.setState({ is_editing__user_name: false })
+                } else if (status === 400) {
+                    this.setState({ errors__user_name: j.errors })
+                } else {
+                    console.warn(status, j)
+                    on_error(j)
+                }
+            })
+            .catch(error => {
+                this.setState({ is_sending__user_name: false })
+                console.warn(error)
+                on_connection_error()
+            })
+    }
 
     render() {
+        const { user_name, is_editing__user_name, is_sending__user_name, errors__user_name } = this.state
         return (
             <ScrollView
                 style={{
@@ -103,7 +150,54 @@ class Drawer extends Component {
                         alignItems: 'center'
                     }}
                 >
-                    <Text style={{ textAlign: 'center', marginTop: '5%', color: '#fff' }}>{user_state.user.name}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 26 }}>
+                        {is_editing__user_name ? (
+                            <>
+                                <TextInput
+                                    style={{
+                                        textAlign: 'center',
+                                        color: '#fff',
+                                        fontFamily: theme.fonts.medium
+                                    }}
+                                    defaultValue={user_state.user.name}
+                                    value={user_name}
+                                    onChangeText={this.onChangeText__user_name}
+                                    maxLength={36}
+                                />
+                                {is_sending__user_name ? (
+                                    <ActivityIndicator color='#fff' style={{ marginLeft: 16 }} size={38} />
+                                ) : (
+                                    <IconButton
+                                        icon='save'
+                                        color='#fff'
+                                        onPress={this.edit__user_name}
+                                        style={{ marginLeft: 16 }}
+                                    />
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <Text
+                                    style={{
+                                        textAlign: 'center',
+                                        color: '#fff',
+                                        fontFamily: theme.fonts.medium
+                                    }}
+                                >
+                                    {user_state.user.name}
+                                </Text>
+                                <IconButton
+                                    icon='edit'
+                                    color='#fff'
+                                    onPress={this.set_editing__user_name}
+                                    style={{ marginLeft: 16 }}
+                                />
+                            </>
+                        )}
+                    </View>
+                    <ErrorText errors={errors__user_name} keys='name' />
+                    <Text style={{ textAlign: 'center', marginTop: 16, color: '#fff' }}>Today remaining likes:</Text>
+                    <Text style={{ textAlign: 'center', color: '#fff' }}>{user_state.user.remaining_likes}</Text>
                 </View>
                 {this.items.map((item, index) => (
                     <Item title={item.title} icon={item.icon} onPress={item.onPress} key={item.title} />
