@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { observer } from 'mobx-react'
 import { states as user_state } from '../Stores/User'
 import { states as snackbar_state } from '../Stores/Snackbar'
-import { HOST } from '../config'
+import { states as settings_state } from '../Stores/Settings'
 import { parseJSON, normalized_phone_number, on_connection_error } from '../utils'
 import ErrorText from '../Components/ErrorText'
 
@@ -61,7 +61,7 @@ class CreatePost extends Component {
     create_post = () => {
         const { text } = this.state
         this.setState({ is_submitting: true, errors_create_post: {} })
-        fetch(`${HOST}/v1/posts`, {
+        fetch(`${settings_state.host}/v1/posts`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',

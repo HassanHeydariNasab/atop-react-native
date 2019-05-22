@@ -12,6 +12,7 @@ import { observer } from 'mobx-react'
 import ErrorText from '../Components/ErrorText'
 import { states as user_state } from '../Stores/User'
 import { states as snackbar_state } from '../Stores/Snackbar'
+import { states as settings_state } from '../Stores/Settings'
 import { HOST } from '../config'
 import { parseJSON, normalized_mobile, on_connection_error, on_error } from '../utils'
 import { theme } from '../index'
@@ -45,7 +46,10 @@ class Login extends Component {
         loc(this)
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+        settings_state.host = HOST
+        AsyncStorage.setItem('host', HOST)
+    }
 
     componentWillUnmount() {
         rol()
@@ -66,7 +70,7 @@ class Login extends Component {
     submit_request_code = () => {
         const { country_code, mobile } = this.state
         this.setState({ is_submitting: true, errors_request_code: {} })
-        fetch(`${HOST}/v1/request_code`, {
+        fetch(`${settings_state.host}/v1/request_code`, {
             method: 'POST',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -95,7 +99,7 @@ class Login extends Component {
     submit_register = () => {
         const { country_code, mobile, code, name } = this.state
         this.setState({ is_submitting: true, errors_register: {} })
-        fetch(`${HOST}/v1/register`, {
+        fetch(`${settings_state.host}/v1/register`, {
             method: 'POST',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -132,7 +136,7 @@ class Login extends Component {
     submit_login = () => {
         const { country_code, mobile, code } = this.state
         this.setState({ is_submitting: true, errors_login: {} })
-        fetch(`${HOST}/v1/login`, {
+        fetch(`${settings_state.host}/v1/login`, {
             method: 'POST',
             headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -167,7 +171,7 @@ class Login extends Component {
     }
 
     fetch_me = () => {
-        fetch(`${HOST}/v1/users/me`, {
+        fetch(`${settings_state.host}/v1/users/me`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -270,6 +274,16 @@ class Login extends Component {
                             >
                                 {'Login / Register'}
                             </Button>
+                            <TextInput
+                                label='Server URL'
+                                placeholder={`for example: ${HOST}`}
+                                value={settings_state.host}
+                                onChangeText={_host => {
+                                    settings_state.host = _host
+                                    AsyncStorage.setItem('host', _host)
+                                }}
+                                style={{ marginTop: 60 }}
+                            />
                         </>
                     ) : (
                         <>

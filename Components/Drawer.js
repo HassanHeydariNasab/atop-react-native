@@ -24,8 +24,8 @@ import {
 import { NavigationAction } from 'react-navigation'
 import { observer } from 'mobx-react'
 import { states as user_state } from '../Stores/User'
+import { states as settings_state } from '../Stores/Settings'
 import ErrorText from './ErrorText'
-import { HOST } from '../config'
 import { parseJSON, normalized_phone_number, on_connection_error, on_error, logout } from '../utils'
 import { theme } from '../index'
 
@@ -100,7 +100,7 @@ class Drawer extends Component {
     edit__user_name = () => {
         const { user_name } = this.state
         this.setState({ is_sending__user_name: true, errors__user_name: {} })
-        fetch(`${HOST}/v1/users/me`, {
+        fetch(`${settings_state.host}/v1/users/me`, {
             method: 'PATCH',
             headers: {
                 Accept: 'application/json',

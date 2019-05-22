@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { observer } from 'mobx-react'
 import { states as user_state } from '../Stores/User'
 import { states as snackbar_state } from '../Stores/Snackbar'
-import { HOST } from '../config'
+import { states as settings_state } from '../Stores/Settings'
 import { parseJSON, normalized_phone_number, on_connection_error } from '../utils'
 import { theme } from '../index'
 
@@ -55,7 +55,7 @@ class Top extends Component {
 
     fetch_top_post = () => {
         this.setState({ is_fetching_post: true })
-        fetch(`${HOST}/v1/posts?offset=0&limit=1`, {
+        fetch(`${settings_state.host}/v1/posts?offset=0&limit=1`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

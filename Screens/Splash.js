@@ -4,28 +4,34 @@ import AsyncStorage from '@react-native-community/async-storage'
 import { ActivityIndicator } from 'react-native-paper'
 import RNRestart from 'react-native-restart'
 import { states as user_state } from '../Stores/User'
-import { parseJSON, logout, on_connection_error } from '../utils'
+import { states as settings_state } from '../Stores/Settings'
+import { parseJSON, logout, on_connection_error, on_error } from '../utils'
 import { HOST } from '../config'
 
 export default class Drawer extends Component {
     constructor(props) {
         super(props)
-        AsyncStorage.getItem('token', (error, token) => {
-            if (token) {
-                user_state.token = token
-                this.fetch_me()
-            } else {
-                AsyncStorage.clear(error => {
-                    if (!error) {
-                        this.props.navigation.navigate('Login')
-                    }
-                })
+        AsyncStorage.getItem('host', (error_host, host) => {
+            if (host) {
+                settings_state.host = host
             }
+            AsyncStorage.getItem('token', (error_token, token) => {
+                if (token) {
+                    user_state.token = token
+                    this.fetch_me()
+                } else {
+                    AsyncStorage.clear(error => {
+                        if (!error) {
+                            this.props.navigation.navigate('Login')
+                        }
+                    })
+                }
+            })
         })
     }
 
     fetch_me = () => {
-        fetch(`${HOST}/v1/users/me`, {
+        fetch(`${settings_state.host || HOST}/v1/users/me`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

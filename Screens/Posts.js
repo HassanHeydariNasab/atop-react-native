@@ -13,7 +13,7 @@ import { observer } from 'mobx-react'
 import ErrorText from '../Components/ErrorText'
 import { states as user_state } from '../Stores/User'
 import { states as snackbar_state } from '../Stores/Snackbar'
-import { HOST } from '../config'
+import { states as settings_state } from '../Stores/Settings'
 import { parseJSON, normalized_phone_number, on_connection_error, on_error } from '../utils'
 import { theme } from '../index'
 
@@ -91,7 +91,7 @@ class Posts extends Component {
     fetch_posts = () => {
         const { posts, offset } = this.state
         this.setState({ is_fetching_posts: true })
-        fetch(`${HOST}/v1/posts?offset=${offset}&limit=${LIMIT}`, {
+        fetch(`${settings_state.host}/v1/posts?offset=${offset}&limit=${LIMIT}`, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -123,7 +123,7 @@ class Posts extends Component {
 
     like_post = post_id => {
         this.setState({ [`is_sending_like_${post_id}`]: true })
-        fetch(`${HOST}/v1/posts/${post_id}`, {
+        fetch(`${settings_state.host}/v1/posts/${post_id}`, {
             method: 'PATCH',
             headers: {
                 Accept: 'application/json',
