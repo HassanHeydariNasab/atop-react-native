@@ -105,6 +105,7 @@ class CreatePost extends Component {
                         mode='outlined'
                         multiline
                         numberOfLines={10}
+                        maxLength={200}
                         style={{ marginTop: 30 }}
                     />
                     <ErrorText errors={errors_create_post} keys='text' />
