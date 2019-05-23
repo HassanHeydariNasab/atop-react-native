@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, Image } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
-import { ActivityIndicator } from 'react-native-paper'
+import { ActivityIndicator, Button } from 'react-native-paper'
 import RNRestart from 'react-native-restart'
 import { states as user_state } from '../Stores/User'
 import { states as settings_state } from '../Stores/Settings'
@@ -61,6 +61,9 @@ export default class Drawer extends Component {
         return (
             <View style={{ flex: 1, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center' }}>
                 <ActivityIndicator size='large' />
+                <Button mode='text' onPress={logout} style={{ marginTop: 100 }}>
+                    logout
+                </Button>
             </View>
         )
     }
